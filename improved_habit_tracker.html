@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Habit Tracker</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <h1>XP Habit Tracker</h1>
+            <nav>
+                <button class="nav-btn active" data-page="today">Today</button>
+                <button class="nav-btn" data-page="week">This Week</button>
+                <button class="nav-btn" data-page="stats">Stats</button>
+                <button id="theme-toggle" class="nav-btn">🌙</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Today's Habits Page -->
+            <div id="today" class="page active">
+                <div class="page-header">
+                    <h2>Today's Habits</h2>
+                    <div class="daily-summary">
+                        <span id="daily-progress">0/0 completed</span>
+                        <span id="daily-xp">0 XP earned</span>
+                    </div>
+                </div>
+                <button id="add-habit-btn" class="btn primary">+ Add New Habit</button>
+
+                <div class="habits-filter">
+                    <select id="category-filter">
+                        <option value="all">All Categories</option>
+                    </select>
+                    <select id="sort-habits">
+                        <option value="name">Sort by Name</option>
+                        <option value="xp">Sort by XP</option>
+                        <option value="streak">Sort by Streak</option>
+                    </select>
+                </div>
+
+                <div id="today-habits" class="habits-list"></div>
+            </div>
+
+            <!-- This Week's Habits Page -->
+            <div id="week" class="page">
+                <div class="page-header">
+                    <h2>This Week's Progress</h2>
+                    <div class="week-summary">
+                        <span id="week-completion">0% completion rate</span>
+                        <span id="week-xp">0 XP this week</span>
+                    </div>
+                </div>
+                <div id="week-habits" class="habits-list"></div>
+            </div>
+
+            <!-- Stats Page -->
+            <div id="stats" class="page">
+                <h2>Statistics & Achievements</h2>
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">🏆</div>
+                        <h3>Total XP</h3>
+                        <p id="total-xp">0</p>
+                        <small>Level <span id="current-level">1</span></small>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">✅</div>
+                        <h3>Today's Progress</h3>
+                        <p id="completed-today">0</p>
+                        <small>habits completed</small>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">🔥</div>
+                        <h3>Best Streak</h3>
+                        <p id="best-streak">0</p>
+                        <small>consecutive days</small>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">📊</div>
+                        <h3>Total Habits</h3>
+                        <p id="total-habits">0</p>
+                        <small>active habits</small>
+                    </div>
+                </div>
+
+                <div class="achievements">
+                    <h3>Achievements</h3>
+                    <div id="achievements-list" class="achievements-grid"></div>
+                </div>
+
+                <div class="progress-chart">
+                    <h3>Weekly Progress</h3>
+                    <div id="weekly-chart" class="chart-container"></div>
+                </div>
+
+                <div class="data-management">
+                    <h3>Data Management</h3>
+                    <p>Backup and restore your habit data</p>
+                    <div class="data-buttons">
+                        <button id="export-data-btn" class="btn secondary">📤 Export Data</button>
+                        <input type="file" id="import-data-input" accept=".json" style="display: none;">
+                        <button id="import-data-btn" class="btn secondary">📥 Import Data</button>
+                    </div>
+                    <small>Export creates a backup file. Import replaces current data.</small>
+                </div>
+            </div>
+        </main>
+        <div class="quick-actions">
+            <button class="quick-add-btn" onclick="app.showModal()" title="Add Habit">+</button>
+        </div>
+    </div>
+
+    <!-- Add Habit Modal -->
+    <div id="habit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Add New Habit</h3>
+            <form id="habit-form">
+                <div class="form-group">
+                    <label for="habit-name">Habit Name</label>
+                    <input type="text" id="habit-name" placeholder="e.g., Morning Exercise" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="habit-xp">XP Value</label>
+                        <input type="number" id="habit-xp" placeholder="10" min="1" max="100" value="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="habit-schedule">Schedule</label>
+                        <select id="habit-schedule" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="custom">Custom Days</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="custom-days-section" class="schedule-options">
+                    <div class="form-group">
+                        <label>Select Days</label>
+                        <div class="days-selector">
+                            <input type="checkbox" id="day-0" class="day-checkbox" value="0">
+                            <label for="day-0" class="day-label">Sun</label>
+
+                            <input type="checkbox" id="day-1" class="day-checkbox" value="1">
+                            <label for="day-1" class="day-label">Mon</label>
+
+                            <input type="checkbox" id="day-2" class="day-checkbox" value="2">
+                            <label for="day-2" class="day-label">Tue</label>
+
+                            <input type="checkbox" id="day-3" class="day-checkbox" value="3">
+                            <label for="day-3" class="day-label">Wed</label>
+
+                            <input type="checkbox" id="day-4" class="day-checkbox" value="4">
+                            <label for="day-4" class="day-label">Thu</label>
+
+                            <input type="checkbox" id="day-5" class="day-checkbox" value="5">
+                            <label for="day-5" class="day-label">Fri</label>
+
+                            <input type="checkbox" id="day-6" class="day-checkbox" value="6">
+                            <label for="day-6" class="day-label">Sat</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="habit-category">Category</label>
+                    <select id="habit-category">
+                        <option value="Health">Health</option>
+                        <option value="Learning">Learning</option>
+                        <option value="Work">Work</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Social">Social</option>
+                        <option value="Creative">Creative</option>
+                        <option value="other">Other...</option>
+                    </select>
+                    <input type="text" id="custom-category" placeholder="Enter custom category" style="display: none;">
+                </div>
+
+                <div class="form-group">
+                    <label for="habit-description">Description (optional)</label>
+                    <textarea id="habit-description" placeholder="Brief description of your habit..."
+                        rows="2"></textarea>
+                </div>
+
+                <button type="submit" class="btn primary full-width">Create Habit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Habit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="app.hideEditModal()">&times;</span>
+            <h3>Edit Habit</h3>
+            <form id="edit-form">
+                <div class="form-group">
+                    <label for="edit-habit-name">Habit Name</label>
+                    <input type="text" id="edit-habit-name" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-habit-xp">XP Value</label>
+                        <input type="number" id="edit-habit-xp" min="1" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-habit-category">Category</label>
+                        <input type="text" id="edit-habit-category" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-habit-description">Description</label>
+                    <textarea id="edit-habit-description" rows="2"></textarea>
+                </div>
+
+                <button type="submit" class="btn primary full-width">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="./improved_script.js"></script>
+</body>
+
+</html>
+
